@@ -31,8 +31,9 @@ type EtcdClusterSpec struct {
 	// +kubebuilder:validation:Minimum:=0
 	Replicas *int32 `json:"replicas,omitempty"`
 	// PodSpec defines the desired state of PodSpec for etcd members. If not specified, default values will be used.
-	PodSpec PodSpec     `json:"podSpec,omitempty"`
-	Storage StorageSpec `json:"storage"`
+	PodSpec  PodSpec     `json:"podSpec,omitempty"`
+	Storage  StorageSpec `json:"storage"`
+	Security Security    `json:"security"`
 }
 
 const (
@@ -180,6 +181,82 @@ type StorageSpec struct {
 	// +optional
 	VolumeClaimTemplate EmbeddedPersistentVolumeClaim `json:"volumeClaimTemplate,omitempty"`
 }
+
+// SecuritySpec defines security settings for etcd.
+// +k8s:openapi-gen=true
+// type SecuritySpec struct {
+// 	// +optional
+// 	Peer CommTypeSpec `json:"peer"`
+// 	// +optional
+// 	ClientServer CommTypeSpec `json:"clientServer"`
+// 	// +optional
+// 	Auth AuthSpec `json:"auth"`
+// }
+
+// type CommTypeSpec struct {
+// 	// +optional
+// 	CaSecretRef corev1.SecretKeySelector `json:"caSecretRef"`
+// 	// +optional
+// 	TlsSecretRef corev1.SecretKeySelector `json:"tlsSecretRef"`
+// }
+
+// type AuthSpec struct {
+// 	// +optional
+// 	Enabled bool `json:"enabled"`
+// }
+
+// peer:
+//   caSecretRef:
+//     name: peer-ca-tls-secret
+//	   key: tls.crt
+//   tlsSecretRef:
+//     name: peer-server-tls-secret
+// clientServer:
+//   caSecretRef:
+//     name: client-server-ca-tls-secret
+//   tlsSecretRef:
+//     name: client-server-server-tls-secret
+
+// SecuritySpec defines security settings for etcd.
+// +k8s:openapi-gen=true
+type Security struct {
+	// +optional
+	Peer *CommInfo `json:"peer,omitempty"`
+	// +optional
+	ClientServer *ClientServerInfo `json:"clientServer,omitempty"`
+}
+
+// +k8s:openapi-gen=true
+type CommInfo struct {
+	// +optional
+	CaSecretName string `json:"caSecretName,omitempty"`
+	// +optional
+	TlsSecretName string `json:"tlsSecretName,omitempty"`
+}
+
+// +k8s:openapi-gen=true
+type ClientServerInfo struct {
+	// +optional
+	CommInfo `json:",omitempty"`
+	// +optional
+	Auth Auth `json:"auth,omitempty"`
+}
+
+// +k8s:openapi-gen=true
+type Auth struct {
+	// +optional
+	RootTlsSecretName string `json:"rootTlsSecretName,omitempty"`
+}
+
+// security:
+//   peer:
+//     caSecretName: peer-ca-tls-secret
+//     tlsSecretName: peer-server-tls-secret
+//   clientServer:
+//     caSecretName: client-server-ca-tls-secret
+//     tlsSecretName: client-server-server-tls-secret
+//     auth:
+//       rootTlsSecretName: client-server-client-tls-secret
 
 // EmbeddedPersistentVolumeClaim is an embedded version of k8s.io/api/core/v1.PersistentVolumeClaim.
 // It contains TypeMeta and a reduced ObjectMeta.

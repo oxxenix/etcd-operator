@@ -141,6 +141,7 @@ func (r *EtcdClusterReconciler) ensureClusterObjects(
 	if err := factory.CreateOrUpdateClientService(ctx, cluster, r.Client, r.Scheme); err != nil {
 		return err
 	}
+	// 4. create or update peer certificates
 
 	return nil
 }
