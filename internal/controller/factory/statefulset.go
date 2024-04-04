@@ -326,7 +326,7 @@ func generateEtcdCommand(cluster *etcdaenixiov1alpha1.EtcdCluster) []string {
 		fmt.Sprintf("--initial-advertise-peer-urls=https://$(POD_NAME).%s.$(POD_NAMESPACE).svc:2380", cluster.Name),
 		// "--data-dir=/var/run/etcd/default.etcd",
 		//
-		fmt.Sprintf("--advertise-client-urls=%s://etcd-sample-client.$(POD_NAMESPACE).svc:2379", serverProtocol),
+		fmt.Sprintf("--advertise-client-urls=%s://$(POD_NAME).%s.$(POD_NAMESPACE).svc:2379", serverProtocol, cluster.Name),
 	}
 
 	command = append(command, peerTlsSettings...)
